@@ -1,0 +1,73 @@
+---
+import { SITE_CONFIG } from '../data/site.shared.js';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonicalPath?: string;
+}
+
+const { title, description, canonicalPath } = Astro.props;
+const baseUrl = Astro.site ?? SITE_CONFIG.url;
+const canonical = canonicalPath && new URL(canonicalPath, baseUrl).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#100d14" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {canonical ? (
+      <>
+        <link rel="canonical" href={canonical} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content={SITE_CONFIG.name} />
+        <meta property="og:title" content={title} />
+        <meta property="og:url" content={canonical} />
+        {description && <meta property="og:description" content={description} />}
+      </>
+    ) : <meta name="robots" content="noindex" />}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  @font-face {
+    font-family: "Instrument Sans";
+    src: url("/fonts/instrument-sans-latin-variable.woff2") format("woff2");
+    font-weight: 400 700;
+    font-display: swap;
+  }
+
+  :root {
+    color-scheme: dark;
+    --background: #100d14;
+    --foreground: #f5f1f8;
+    --muted: #c4bbce;
+    --rule: #392f42;
+    --accent: #d4bdf6;
+    background: var(--background);
+    color: var(--foreground);
+    font: 1rem/1.6 "Instrument Sans", system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body, h1, h2, p { margin: 0; }
+
+  a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: .25em;
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+</style>
